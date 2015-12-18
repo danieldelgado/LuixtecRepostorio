@@ -1,0 +1,8 @@
+package pe.adra.core.annotation;
+
+public @interface PluginValor {
+
+	String campoCbo();
+	String OrderDefault() default "N/A";
+
+}

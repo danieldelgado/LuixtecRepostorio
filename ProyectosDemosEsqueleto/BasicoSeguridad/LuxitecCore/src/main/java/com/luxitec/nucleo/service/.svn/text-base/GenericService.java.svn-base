@@ -1,0 +1,32 @@
+package pe.adra.core.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import pe.adra.core.msg.MessageCore;
+import pe.adra.core.parse.TranslateClass;
+
+public class GenericService {
+
+	@Autowired
+	private TranslateClass translateClass;
+
+	@Autowired
+	private MessageCore messageCore;
+	
+	public TranslateClass getTranslateClass() {
+		return translateClass;
+	}
+
+	public void setTranslateClass(TranslateClass translateClass) {
+		this.translateClass = translateClass;
+	}
+
+	public MessageCore getMessageCore() {
+		return messageCore;
+	}
+
+	public void setMessageCore(MessageCore messageCore) {
+		this.messageCore = messageCore;
+	}
+	
+}

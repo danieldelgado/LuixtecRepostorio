@@ -1,0 +1,17 @@
+package pe.adra.core.controller;
+
+import pe.adra.util.config.Config;
+
+public class Controller {
+
+	public static String RUTA_PUBLICA=Config.getPropiedad("adra.proyecto.ruta.publico");
+	
+	public static String RUTA_PRIVADA=Config.getPropiedad("adra.proyecto.ruta.privada");
+	public static String RUTA_PRIVADA_ADMINISTRATIVO=Config.getPropiedad("adra.proyecto.ruta.privada.administrativo");
+	public static String RUTA_PRIVADA_MANTENIMIENTO=Config.getPropiedad("adra.proyecto.ruta.privada.mantenimiento");
+		
+	public Controller(){
+		
+	}
+	
+}

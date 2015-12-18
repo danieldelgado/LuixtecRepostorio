@@ -1,0 +1,5 @@
+package pe.adra.core.controller;
+
+public class StandGenericController extends Controller {
+
+}

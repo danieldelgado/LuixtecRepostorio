@@ -1,0 +1,5 @@
+package pe.adra.core.service;
+
+public class StandGenericService {
+
+}

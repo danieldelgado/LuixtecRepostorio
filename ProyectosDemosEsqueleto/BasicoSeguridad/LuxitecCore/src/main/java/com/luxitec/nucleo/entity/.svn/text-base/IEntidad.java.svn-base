@@ -1,0 +1,20 @@
+package pe.adra.core.entity;
+
+/**
+ * @author Danielle Delgado
+ *
+ */
+public interface IEntidad {
+	/**
+	 * ID
+	 * @return
+	 */
+	public Long getId();	
+	/**
+	 * Nombre completo
+	 * @return
+	 */
+	public String getNombreCompleto();
+	
+	
+}

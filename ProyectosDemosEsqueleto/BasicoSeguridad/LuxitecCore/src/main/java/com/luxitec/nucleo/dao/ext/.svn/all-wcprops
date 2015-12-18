@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 78
+/svn/!svn/ver/268/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/dao/ext
+END
+QueryUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/327/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/dao/ext/QueryUtil.java
+END
+DAOBase.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/266/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/dao/ext/DAOBase.java
+END
+DAOBaseImpl.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/320/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/dao/ext/DAOBaseImpl.java
+END

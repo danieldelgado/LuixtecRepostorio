@@ -1,0 +1,26 @@
+package pe.adra.core.dao.ext;
+
+import java.util.Date;
+
+import javax.persistence.Query;
+
+import pe.adra.core.bean.SuportEntidad;
+import pe.adra.core.entity.CoreEntidad;
+
+public abstract class DAOBaseImpl<T extends CoreEntidad>  {
+
+	protected abstract Query procesarConsulta(T filtro, StringBuffer strbfSqlQuery, SuportEntidad... innerjoin);
+
+	protected abstract Query procesarConsulta(T filtro, Date finit, Date ffin, StringBuffer strbfSqlQuery, SuportEntidad... innerjoin);
+
+	protected abstract Query procesarConsulta(T objEntidad, Integer[] ids, StringBuffer strbfSqlQuery, SuportEntidad... innerjoin);
+
+	protected abstract void setValues(T objEntidad, Integer[] ids, StringBuffer strbfSqlQuery, SuportEntidad... innerjoin);
+
+	protected abstract void setValues(T filtro, Date finit, Date ffin, StringBuffer strbfSqlQuery, SuportEntidad... innerjoin);
+
+	protected abstract void setFiltroEntidad(T filtro, Date finit, Date ffin, SuportEntidad... innerjoin);
+
+	protected abstract void setFiltroEntidad(T objEntidad, Integer[] ids, SuportEntidad... innerjoin);
+
+}

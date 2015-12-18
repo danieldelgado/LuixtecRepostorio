@@ -1,0 +1,290 @@
+package pe.adra.core.parse;
+
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import org.hibernate.LazyInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import pe.adra.util.constantes.ConstantesSistema;
+import pe.adra.util.constantes.ConstantesUtil;
+import pe.adra.util.validate.ValidateUtil;
+
+import com.google.common.reflect.ClassPath;
+
+@Component
+public class TranslateClass {
+
+	private static final Logger logger = LoggerFactory.getLogger(TranslateClass.class);
+
+	public static final int NIVEL_0 = 0;
+	public static final int NIVEL_1 = 1;
+	public static final int NIVEL_2 = 2;
+
+	private String packEntidades;
+	private String packBeans;
+
+	private static Map<String, EscaneoClass> listaObjetos;
+
+	public void analizarPaquetes() throws IOException {
+		logger.debug("Iniciando escaneo de paquetes");
+
+		listaObjetos = new LinkedHashMap<String, EscaneoClass>();
+
+		EscaneoClass p = null;
+		final ClassLoader loaderEntidad = Thread.currentThread().getContextClassLoader();
+		{
+			for (final ClassPath.ClassInfo info : ClassPath.from(loaderEntidad).getTopLevelClasses()) {
+				if (info.getName().startsWith(packEntidades + ".")) {
+					final Class<?> clazz = info.load();
+					p = new EscaneoClass();
+					p.addClase(clazz);
+					p.setSuperClass(clazz.getSuperclass());
+					p.examinar();
+					listaObjetos.put(clazz.getName(), p);
+				}
+			}
+		}
+
+		final ClassLoader loaderBean = Thread.currentThread().getContextClassLoader();
+		{
+			for (final ClassPath.ClassInfo info : ClassPath.from(loaderBean).getTopLevelClasses()) {
+				if (info.getName().startsWith(packBeans + ".")) {
+					final Class<?> clazz = info.load();
+					p = new EscaneoClass();
+					p.addClase(clazz);
+					p.setSuperClass(clazz.getSuperclass());
+					p.examinar();
+					listaObjetos.put(clazz.getName(), p);
+				}
+			}
+		}
+
+		logger.debug(listaObjetos.toString());
+		logger.debug("Fin del escaneo ... Estructuras de los paquetes instanciadas ");
+	}
+
+	@SuppressWarnings("rawtypes")
+	public void translateAt(Object a, Object b, int nivel) {
+		if (ValidateUtil.isNull(a) || ValidateUtil.isNull(b)) {
+			logger.warn("Valores ingresados son nulos o incorrectos");
+			return;
+		}
+		logger.debug("Nivel:" + nivel);
+		if (nivel >= ConstantesUtil.NUMBER_2) {
+//			logger.debug("Limite de transferencia : " + a + " a " + b);
+			return;
+		} else {
+			nivel++;
+		}
+		Class a1 = a.getClass();
+		EscaneoClass par1 = listaObjetos.get(a1.getName());
+		Class b2 = b.getClass();
+		EscaneoClass par2 = listaObjetos.get(b2.getName());
+		logger.debug("Transfencia de valores  de : " + a1.getName() + " a " + b2.getName());
+		InstanciaAtributo parseAtri_a1 = null, parseAtri_b2 = null;
+		Map<String, InstanciaAtributo> parseMap_a1 = par1.getParseMap(), parseMap_b2 = par2.getParseMap();
+		List<Field> listaCampos_a1 = par1.getListaCampos();
+		Class otherType = null;
+		Object objetivoCampo = null, val = null;
+		String attr = null;
+		try {
+			for (Field field : listaCampos_a1) {
+				attr = field.getName();
+				parseAtri_a1 = parseMap_a1.get(attr);
+				parseAtri_b2 = parseMap_b2.get(attr);
+				if (ValidateUtil.isNotNull(parseAtri_a1) && ValidateUtil.isNotNull(parseAtri_b2)) {
+
+					if (parseAtri_b2.getMetodoSet().getParameterTypes().length > ConstantesUtil.NUMBER_0) {
+						otherType = parseAtri_b2.getMetodoSet().getParameterTypes()[0];
+					}
+
+					try {
+						val = parseAtri_a1.getMetodoGet().invoke(a, null);
+						if(ValidateUtil.isNotNull(val)){
+							String msg =  val.toString();
+							System.out.println(msg);
+						}
+						
+//						logger.debug("Campo:" + attr + " valor:" + val + ConstantesUtil.VACIO);
+					} catch (LazyInitializationException e) {
+//						logger.error("Error al obtener valor de un objeto con Anotacion Lazy con el campo:" + attr);
+//						logger.debug("Error al obtener valor de un objeto con Anotacion Lazy con el campo:" + attr, e);
+						val = null;
+					}
+
+					if (reconoceTipo(otherType)) {
+//						val = parseAtri_a1.getMetodoGet().invoke(a, null);
+						parseAtri_b2.getMetodoSet().invoke(b, val);
+					} else {
+						objetivoCampo = Class.forName(otherType.getName()).newInstance();
+						if (escaneoAnotaciones(parseAtri_a1.getField()) || ValidateUtil.isNotNull(val)) {
+							translateAt(val, objetivoCampo, nivel);
+						}
+						parseAtri_b2.getMetodoSet().invoke(b, objetivoCampo);
+
+					}
+
+				}
+				otherType = null;
+				val = null;
+				objetivoCampo = null;
+				parseAtri_a1 = null;
+				parseAtri_b2 = null;
+			}
+		} catch (IllegalArgumentException e) {
+			logger.error("Ilegal error de argumentos estalecidos tipo :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		} catch (IllegalAccessException e) {
+			logger.error("Ilegal acceso :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		} catch (InvocationTargetException e) {
+			logger.error("Objetivo de invocacion erronea :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		} catch (InstantiationException e) {
+			logger.error("Error en la instancia :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		} catch (ClassNotFoundException e) {
+			logger.error("No encuentra la clase :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		}
+		logger.debug("Transferencia finalizada.");
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void translateAtList(Class a, List a1, Class b, List b2, int nivel) {
+		if (ValidateUtil.isNull(a) || ValidateUtil.isNull(b) || ValidateUtil.isNull(a1)) {
+			logger.warn("Valores ingresados son nulos");
+			return;
+		}
+		logger.debug("Inicializando escaneo");
+		EscaneoClass par1 = listaObjetos.get(a.getName());
+		EscaneoClass par2 = listaObjetos.get(b.getName());
+		InstanciaAtributo parseAtri_a1 = null, parseAtri_b2 = null;
+		logger.debug("Transfencia de valores  de : " + a.getName() + " a " + b.getName());
+		Map<String, InstanciaAtributo> parseMap_a1 = par1.getParseMap(), parseMap_b2 = par2.getParseMap();
+		List<Field> listaCampos_a1 = par1.getListaCampos();
+		Object objetivo = null, objetivoCampo = null, val = null;
+		logger.debug("Inicializando transferencia de valores");
+		String attr = null;
+		Class otherType = null;
+		try {
+			for (Object base : a1) {
+				objetivo = Class.forName(b.getName()).newInstance();
+				for (Field field : listaCampos_a1) {
+					attr = field.getName();
+					parseAtri_a1 = parseMap_a1.get(attr);
+					parseAtri_b2 = parseMap_b2.get(attr);
+					if (ValidateUtil.isNotNull(parseAtri_a1) && ValidateUtil.isNotNull(parseAtri_b2)) {
+
+						if (parseAtri_b2.getMetodoSet().getParameterTypes().length > ConstantesUtil.NUMBER_0) {
+							otherType = parseAtri_b2.getMetodoSet().getParameterTypes()[0];
+						}
+
+						try {
+							val = parseAtri_a1.getMetodoGet().invoke(base, null);
+							if(ValidateUtil.isNotNull(val)){
+								String msg =  val.toString();
+								System.out.println(msg);
+							}
+							logger.debug("Campo:" + attr + " valor:" + val + ConstantesUtil.VACIO);
+						} catch (LazyInitializationException e) {
+//							logger.error("Error al obtener valor de un objeto con Anotacion Lazy con el campo:" + attr);
+//							logger.debug("Error al obtener valor de un objeto con Anotacion Lazy con el campo:" + attr, e);
+							val = null;
+						}
+
+						if (reconoceTipo(otherType)) {
+							parseAtri_b2.getMetodoSet().invoke(objetivo, val);
+						} else {
+							objetivoCampo = Class.forName(otherType.getName()).newInstance();
+							if (escaneoAnotaciones(parseAtri_a1.getField()) || ValidateUtil.isNotNull(val)) {
+								translateAt(val, objetivoCampo, nivel);
+							}
+							parseAtri_b2.getMetodoSet().invoke(objetivo, objetivoCampo);
+						}
+					}
+				}
+				b2.add(objetivo);
+				objetivo = null;
+				otherType = null;
+				val = null;
+				objetivoCampo = null;
+				parseAtri_a1 = null;
+				parseAtri_b2 = null;
+			}
+		} catch (IllegalArgumentException e) {
+			logger.error("Ilegal error de argumentos estalecidos tipo :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		} catch (IllegalAccessException e) {
+			logger.error("Ilegal acceso :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		} catch (InvocationTargetException e) {
+			logger.error("Objetivo de invocacion erronea :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		} catch (InstantiationException e) {
+			logger.error("Error en la instancia :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		} catch (ClassNotFoundException e) {
+			logger.error("No encuentra la clase :" + otherType + " other Type : " + otherType + " objetivo Campo Atributo : " + objetivoCampo + " Valor : " + val, e);
+		}
+		logger.debug("Transferencia finalizada.");
+	}
+
+	private boolean escaneoAnotaciones(Field field) {
+		Annotation[] annotations = field.getDeclaredAnnotations();
+		String vafl = ConstantesUtil.VACIO;
+		for (Annotation annotation : annotations) {
+			if (annotation instanceof OneToOne) {
+				OneToOne on = (OneToOne) annotation;
+				vafl = on.fetch().name();
+			} else if (annotation instanceof ManyToOne) {
+				ManyToOne on = (ManyToOne) annotation;
+				vafl = on.fetch().name();
+			} else if (annotation instanceof OneToMany) {
+				OneToMany on = (OneToMany) annotation;
+				vafl = on.fetch().name();
+			} else if (annotation instanceof ManyToMany) {
+				ManyToMany on = (ManyToMany) annotation;
+				vafl = on.fetch().name();
+			}
+		}
+		if (vafl.equals("EAGER")) {
+			return true;
+		}
+		return false;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private boolean reconoceTipo(Class otherType) {
+		if (ValidateUtil.isNull(otherType)) {
+			return false;
+		}
+		String type = otherType.getSimpleName();
+		if (type.equals(ConstantesSistema.TYPE_STRING) || type.equals(ConstantesSistema.TYPE_INTEGER) || type.equals(ConstantesSistema.TYPE_BOOLEAN) || type.equals(ConstantesSistema.TYPE_LONG) || type.equals(ConstantesSistema.TYPE_DATE)
+				|| type.equals(ConstantesSistema.TYPE_CHARACTER) || type.equals(ConstantesSistema.LIST) || type.equals(ConstantesSistema.TYPE_INT) || type.equals(ConstantesSistema.TYPE_BOOLEAN_N)) {
+			return true;
+		}
+		return false;
+	}
+
+	public String getPackEntidades() {
+		return packEntidades;
+	}
+
+	public void setPackEntidades(String packEntidades) {
+		this.packEntidades = packEntidades;
+	}
+
+	public String getPackBeans() {
+		return packBeans;
+	}
+
+	public void setPackBeans(String packBeans) {
+		this.packBeans = packBeans;
+	}
+
+}

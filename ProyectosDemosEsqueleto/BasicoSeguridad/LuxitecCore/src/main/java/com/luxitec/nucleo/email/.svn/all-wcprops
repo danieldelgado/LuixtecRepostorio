@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 76
+/svn/!svn/ver/266/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/email
+END
+MailUtil.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/266/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/email/MailUtil.java
+END
+MailBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/266/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/email/MailBean.java
+END
+AttachmentBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 96
+/svn/!svn/ver/266/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/email/AttachmentBean.java
+END

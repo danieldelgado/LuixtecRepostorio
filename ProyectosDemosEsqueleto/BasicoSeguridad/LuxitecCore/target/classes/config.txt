@@ -1,0 +1,9 @@
+*****
+1)En el root context configurar lo siguiente
+
+		<bean id="parseClase" class="com.luxitec.nucleo.parse.TranslateClass" init-method="analizarPaquetes" >		
+			<property name="packEntidades" value="com.ejemplo.bean" ></property>			
+			<property name="packBeans"  value="com.ejemplo.entidades" ></property>	
+		</bean>
+
+*****

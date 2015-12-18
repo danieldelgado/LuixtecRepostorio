@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 75
+/svn/!svn/ver/299/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean
+END
+ComboBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/274/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean/ComboBean.java
+END
+ViewColumn.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/270/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean/ViewColumn.java
+END
+FiltroPaginado.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/326/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean/FiltroPaginado.java
+END
+GenericBean.java
+K 25
+svn:wc:ra_dav:version-url
+V 92
+/svn/!svn/ver/270/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean/GenericBean.java
+END
+SuportEntidad.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/266/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean/SuportEntidad.java
+END
+ViewList.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/270/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean/ViewList.java
+END
+ValidateResult.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/!svn/ver/271/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean/ValidateResult.java
+END
+FiltroEntidad.java
+K 25
+svn:wc:ra_dav:version-url
+V 94
+/svn/!svn/ver/327/trunk/TNOVA/ADRA/ADRACore/src/main/java/pe/adra/core/bean/FiltroEntidad.java
+END
