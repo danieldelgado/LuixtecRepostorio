@@ -7,94 +7,34 @@
 	<artifactId>LuxitecUtil</artifactId>
 	<version>1.2.1</version>
 	<packaging>jar</packaging>
-	<name>Luxitec Utility</name>
+	<name>Luxitec Utilitario</name>
 	<url>http://www.luxitecsoluciones.com</url>
 	<description>
 		<![CDATA[
-      This project is a minimal jar utility with Spring configuration.
+     	Libreria para los utilitarios d eLuxitec Soluciones
     ]]>
 	</description>
 	<properties>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
 		<spring.framework.version>3.0.6.RELEASE</spring.framework.version>
 	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-context</artifactId>
-			<version>${spring.framework.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>commons-logging</groupId>
-					<artifactId>commons-logging</artifactId>
-				</exclusion>
-			</exclusions>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.framework.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-entitymanager</artifactId>
-			<version>3.6.0.Final</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-codec</groupId>
-			<artifactId>commons-codec</artifactId>
-			<version>1.8</version>
-		</dependency>
+	<dependencies>		
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
 			<version>2.2.2</version>
-		</dependency>
+		</dependency>		
 		<dependency>
 			<groupId>com.google.collections</groupId>
 			<artifactId>google-collections</artifactId>
 			<version>1.0-rc2</version>
-		</dependency>
-		
+		</dependency>		
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>14.0</version>
-		</dependency>
-		
-<!-- 		<dependency> -->
-<!-- 			<groupId>com.google.guava</groupId> -->
-<!-- 			<artifactId>guava</artifactId> -->
-<!-- 			<version>r05</version> -->
-<!-- 		</dependency> -->
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.1</version>
-			<scope>test</scope>
-		</dependency>
+		</dependency>	
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -105,7 +45,6 @@
 					<target>1.5</target>
 				</configuration>
 			</plugin>
-
 		</plugins>
 	</build>
 </project>
