@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Hello WebSocket</title>
+
+
+<script type="text/javascript"
+	src="http://cdn.jsdelivr.net/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript"
+	src="http://cdn.sockjs.org/sockjs-0.3.4.js"></script>
+<script type="text/javascript"
+	src="http://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script type="text/javascript">
+	var stompClient = null;
+	var command_connect = "3";
+	var command_localizacion = "0";
+	var command_confirmar_solicitud = "1";
+	var command_solicitud = "2";
+
+	function setConnected(connected) {
+		document.getElementById('connect').disabled = connected;
+		document.getElementById('disconnect').disabled = !connected;
+		document.getElementById('conversationDiv').style.visibility = connected ? 'visible'
+				: 'hidden';
+		document.getElementById('response').innerHTML = '';
+	}
+
+	function connect() {
+	
+		
+				console.log("connect");
+		
+		$.ajax({
+			type: "POST",
+			dataType: 'json', 
+			url: 'http://localhost:8081/MoveGoIntegradorService/service/login',
+			data: {
+				'login':'danie@qwwq.com',
+				'pass':'1234'
+			},
+			success: function(usuario){
+			
+				console.log(usuario);
+					
+				//if(usuario.id > 0){
+					var socket = new SockJS('http://localhost:8081/MoveGoIntegradorService/movego_ws');
+					stompClient = Stomp.over(socket);
+					stompClient.connect({'login':'danie@qwwq.com','passcode':'1234','token':usuario.token}, function(frame) {
+						
+						console.log('Connected: ' + frame);
+						
+						setConnected(true);
+						
+						stompClient.subscribe('/topic/resultconnect', function(greeting) {
+							/*showGreeting(JSON.parse(greeting.body).content);*/
+							
+							stompClient.send("/app/movego_ws", {}, JSON.stringify({
+								'command' : command_connect,
+								'mensaje' : 'connect',
+								'error' : '',
+								 'usuario' : usuario
+								}
+								));
+							
+							
+						});
+					});
+			//	}else{
+			//		console.log('no se puede conectar');					
+			//	}
+				
+				
+				
+			}
+		});
+	
+	
+	
+		
+	}
+
+	function disconnect() {
+		if (stompClient != null) {
+			stompClient.disconnect();
+		}
+		setConnected(false);
+		console.log("Disconnected");
+	}
+
+	function sendName() {
+		var name = document.getElementById('name').value;
+		stompClient.send("/app/movego_ws", {}, JSON.stringify({
+			'name' : name
+		}));
+	}
+
+	function enviarubicacion() {
+		var name = document.getElementById('name').value;
+		stompClient.send("/app/movego_ws", {}, JSON.stringify({
+			'command' : command_localizacion,
+			'mensaje' : 'localizacion',
+			'error' : '',
+			'localizacion' : {
+				'latitud' : '-12.078676',
+				'longitud' : '-77.047761'
+			},
+			 'usuario' : {
+				'id' : '1',
+				'nombre' : 'asd',
+				'tipoUsuario':'1',
+				'vehiculoBean':{
+					'id':'213'				
+				}
+			}
+		}));
+	}
+	
+	function showGreeting(message) {
+		var response = document.getElementById('response');
+		var p = document.createElement('p');
+		p.style.wordWrap = 'break-word';
+		p.appendChild(document.createTextNode(message));
+		response.appendChild(p);
+	}
+</script>
+</head>
+<body onload="disconnect()">
+	<noscript>
+		<h2 style="color: #ff0000">Seems your browser doesn't support
+			Javascript! Websocket relies on Javascript being enabled. Please
+			enable Javascript and reload this page!</h2>
+	</noscript>
+	<div>
+		<div>
+			<button id="connect" onclick="connect();">Connect</button>
+			<button id="disconnect" disabled="disabled" onclick="disconnect();">Disconnect</button>
+		</div>
+		<div id="conversationDiv">
+			<label>What is your name?</label><input type="text" id="name" />
+			<button id="sendName" onclick="sendName();">Send</button>
+			<p id="response"></p>
+		</div>
+		<button id="enviarubicacion" onclick="enviarubicacion();">enviarubicacion</button>
+
+	</div>
+</body>
+</html>
